@@ -1,0 +1,1921 @@
+/* =========================================================
+   Deboost Bot — стили
+   Палитра: только чёрный, белый и оттенки серого
+   ========================================================= */
+
+/* ---------- 1. Переменные (палитра, размеры) ---------- */
+:root {
+  --bg: #050505;          /* фон страницы */
+  --card: #101010;        /* фон карточек */
+  --card-2: #161616;      /* чуть светлее — для вложенных блоков */
+  --border: #262626;      /* тонкие рамки */
+  --text: #f2f2f2;        /* основной текст */
+  --muted: #8a8a8a;       /* второстепенный */
+  --skeleton: #1f1f1f;    /* цвет заглушек */
+  --skeleton-hi: #2c2c2c; /* блик на заглушке */
+  --sk-inv: #cfcfcf;      /* заглушка на инвертированном блоке (белый тариф, белые кнопки) */
+  --sk-inv-hi: #e4e4e4;
+  --sk-btn: #333333;      /* заглушка внутри кнопки цвета фона */
+  --header-bg: rgba(10, 10, 10, 0.7);
+  --glow: rgba(255, 255, 255, 0.07);   /* свечение в hero */
+  /* пятна градиента на главной карточке */
+  --blob-1: rgba(255, 255, 255, 0.22);
+  --blob-2: rgba(255, 255, 255, 0.07);
+  --blob-3: rgba(170, 170, 170, 0.16);
+  --hero-grid: rgba(255, 255, 255, 0.045);
+  --hero-grid-hi: rgba(255, 255, 255, 0.12);  /* сетка под курсором */
+  --hero-spot: rgba(255, 255, 255, 0.06);     /* пятно за курсором */
+  --home-dot: rgba(255, 255, 255, 0.07);      /* точки фона страниц */
+  --home-glow: rgba(255, 255, 255, 0.05);
+  --shine-a: #6b6b6b;     /* градиент слова Deboost */
+  --shine-b: #e6e6e6;
+  --muted-inv: #6b6b6b;   /* второстепенный текст на инвертированном блоке */
+  --danger: #ff6b6b;      /* единственный цветной: ошибки в формах */
+
+  --radius: 28px;         /* скругление больших блоков */
+  --radius-sm: 16px;
+  --max: 1200px;          /* максимальная ширина контента */
+
+  --font: "Manrope", system-ui, sans-serif;
+  --mono: "Geist Mono", ui-monospace, monospace;
+}
+
+/* ---------- Светлая тема ----------
+   Класс .light на <html> ставит скрипт в <head>.
+   Переопределяем только цвета — вся вёрстка остаётся той же. */
+:root.light {
+  --bg: #e2e2df;
+  --card: #ececea;
+  --card-2: #d8d8d5;
+  --border: #cbcbc7;
+  --text: #121212;
+  --muted: #5c5c5a;
+  --skeleton: #d3d3d0;
+  --skeleton-hi: #dfdfdc;
+  --sk-inv: #3a3a3a;
+  --sk-inv-hi: #4c4c4c;
+  --sk-btn: #c2c2bf;
+  --header-bg: rgba(236, 236, 234, 0.75);
+  --glow: rgba(0, 0, 0, 0.05);
+  --blob-1: rgba(255, 255, 255, 0.95);
+  --blob-2: rgba(0, 0, 0, 0.09);
+  --blob-3: rgba(255, 255, 255, 0.7);
+  --hero-grid: rgba(0, 0, 0, 0.05);
+  --hero-grid-hi: rgba(0, 0, 0, 0.12);
+  --hero-spot: rgba(255, 255, 255, 0.6);
+  --home-dot: rgba(0, 0, 0, 0.08);
+  --home-glow: rgba(255, 255, 255, 0.55);
+  --shine-a: #8a8a88;
+  --shine-b: #1a1a1a;
+  --muted-inv: #a3a3a0;
+  --danger: #c62828;
+}
+
+/* ---------- 2. Сброс и база ---------- */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 100px; /* отступ при переходе по якорю, чтобы шапка не закрывала заголовок */
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.5;
+  overflow-x: hidden;
+  transition: background 0.3s, color 0.3s; /* плавная смена темы */
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.mono {
+  font-family: var(--mono);
+}
+
+/* атрибут hidden должен прятать элемент, даже если у него задан display */
+[hidden] {
+  display: none !important;
+}
+
+/* ---------- Фон страниц ----------
+   Спокойный, без анимации: редкие точки и мягкий свет сверху. Общий для всех страниц.
+   Лежит отдельным слоем (::before), прибит к окну и не мешает кликам. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 70% 45% at 50% 0%, var(--home-glow), transparent 70%),
+    radial-gradient(var(--home-dot) 1px, transparent 1.5px) 0 0 / 26px 26px;
+  /* точки плавно исчезают к краям и вниз */
+  -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 30%, #000 40%, transparent 100%);
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 30%, #000 40%, transparent 100%);
+}
+
+/* ---------- 3. Заглушки (skeleton) ---------- */
+/* серые полоски вместо текста; позже заменим на настоящий текст */
+.sk {
+  display: block;
+  height: 12px;
+  width: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--skeleton) 0%, var(--skeleton-hi) 50%, var(--skeleton) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 2.4s linear infinite;
+}
+
+@keyframes shimmer {
+  from { background-position: 200% 0; }
+  to   { background-position: -200% 0; }
+}
+
+/* размеры заглушек */
+.sk--nav     { width: 64px;  height: 10px; }
+.sk--eyebrow { width: 110px; height: 8px; }
+.sk--h1      { width: 100%;  height: 56px; border-radius: 14px; }
+.sk--h2      { width: 320px; max-width: 100%; height: 32px; border-radius: 10px; }
+.sk--h3      { width: 60%;   height: 18px; }
+.sk--line    { height: 10px; }
+.sk--label   { width: 80px;  height: 8px; }
+.sk--seg     { width: 56px;  height: 8px; }
+.sk--btn     { width: 110px; height: 10px; }
+.sk--price   { width: 45%;   height: 40px; border-radius: 10px; }
+
+.sk--short { width: 75%; }
+.sk--w70   { width: 70%; }
+.sk--w60   { width: 60%; }
+.sk--w50   { width: 50%; }
+.sk--w40   { width: 40%; }
+
+/* заглушки на белом фоне */
+.sk--light {
+  background: linear-gradient(90deg, var(--sk-inv) 0%, var(--sk-inv-hi) 50%, var(--sk-inv) 100%);
+  background-size: 200% 100%;
+}
+
+/* ---------- 4. Мелкие общие элементы ---------- */
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--text);
+  box-shadow: 0 0 10px var(--text);
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px;
+}
+
+/* ---------- 5. Кнопки ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 52px;
+  padding: 0 28px;
+  border-radius: 999px;       /* форма «пилюля» */
+  text-decoration: none;      /* кнопка может быть и ссылкой <a> */
+  white-space: nowrap;
+  transition: transform 0.2s, background 0.2s, border-color 0.2s;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+}
+
+.btn--primary {
+  background: var(--text);    /* белая кнопка */
+  color: var(--bg);
+  font-weight: 600;
+}
+.btn--primary .sk {
+  background: var(--sk-inv);
+  animation: none;
+}
+
+.btn--ghost {
+  border: 1px solid var(--border);
+}
+.btn--ghost:hover {
+  border-color: var(--muted);
+}
+
+.btn--dark {
+  background: var(--bg);
+}
+
+.btn--full {
+  width: 100%;
+  margin-top: auto;           /* прижать кнопку к низу карточки */
+}
+
+.arrow {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: var(--muted);
+  stroke-width: 1.6;
+}
+
+/* ---------- 6. Шапка ---------- */
+.header {
+  position: sticky;           /* прилипает к верху при прокрутке */
+  top: 16px;
+  z-index: 10;
+  padding: 0 16px;
+}
+
+/* ряд: капсула шапки + отдельная плашка темы справа */
+.header__row {
+  max-width: var(--max);
+  margin: 16px auto 0;
+  display: flex;
+  gap: 8px;
+}
+
+.header__inner {
+  flex: 1;                      /* капсула занимает всё место, кроме плашки темы */
+  height: 64px;
+  padding: 0 16px 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--header-bg);
+  backdrop-filter: blur(12px); /* размытие фона под шапкой */
+  border: 1px solid var(--border);
+  border-radius: 999px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+
+/* обёртка иконки: «пружинистое» появление при загрузке */
+.logo__mark {
+  display: inline-flex;
+  animation: markIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* статичная иконка (в подвале) */
+.logo__icon {
+  color: var(--text);   /* currentColor внутри символа */
+  display: block;
+  width: 36px;
+  height: 36px;
+}
+
+/* ----- анимированная птица в шапке ----- */
+.bird {
+  display: block;
+  width: 36px;
+  height: 36px;
+  overflow: visible;   /* чтобы при прыжке птицу не обрезало */
+  fill: var(--text);
+}
+
+/* точки вращения задаются в координатах viewBox (0..64) */
+.bird * {
+  transform-box: view-box;
+}
+
+.bird__eye {
+  fill: var(--bg);
+  transform-origin: 41px 21px;
+  animation: blink 4s infinite;               /* моргает */
+}
+
+.bird__letter {
+  fill: none;
+  stroke: var(--bg);
+  stroke-width: 2.6;
+  stroke-linecap: round;
+}
+
+.bird__all {
+  transform-origin: 32px 56px;
+  animation: bob 3s ease-in-out infinite;     /* слегка покачивается */
+}
+
+.bird__head {
+  transform-origin: 36px 30px;                /* «шея» */
+  animation: headPeck 6s ease-in-out infinite; /* иногда клюёт */
+}
+
+.bird__crest {
+  transform-origin: 34px 15px;
+  animation: crest 3s ease-in-out infinite;   /* хохолок шевелится */
+}
+
+.bird__tail {
+  transform-origin: 23px 50px;
+  animation: tail 3s ease-in-out infinite;    /* хвост подёргивается */
+}
+
+/* при наведении птица подпрыгивает */
+.logo:hover .bird__all {
+  animation: hop 0.6s ease-out;
+}
+
+/* надпись: два слова разными оттенками */
+.logo__text {
+  font-size: 17px;
+  letter-spacing: -0.4px;
+  white-space: nowrap;
+  animation: textIn 0.6s 0.3s ease-out both;
+}
+
+.logo__name {
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* второе слово — серебристый градиент, который медленно переливается */
+.logo__sub {
+  font-weight: 500;
+  background: linear-gradient(90deg, var(--shine-a) 0%, var(--shine-b) 50%, var(--shine-a) 100%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shimmer 4s linear infinite;
+}
+
+@keyframes markIn {
+  from { opacity: 0; transform: scale(0.4) rotate(-20deg); }
+}
+
+@keyframes bob {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-1.5px); }
+}
+
+@keyframes headPeck {
+  0%, 70%, 100% { transform: rotate(0); }
+  75%           { transform: rotate(14deg); }
+  80%           { transform: rotate(-3deg); }
+  85%           { transform: rotate(12deg); }
+  90%           { transform: rotate(0); }
+}
+
+@keyframes blink {
+  0%, 90%, 100% { transform: scaleY(1); }
+  94%           { transform: scaleY(0.1); }
+}
+
+@keyframes crest {
+  0%, 100% { transform: rotate(-6deg); }
+  50%      { transform: rotate(6deg); }
+}
+
+@keyframes tail {
+  0%, 100% { transform: rotate(0); }
+  50%      { transform: rotate(-8deg); }
+}
+
+@keyframes hop {
+  0%   { transform: translateY(0) rotate(0); }
+  40%  { transform: translateY(-6px) rotate(-8deg); }
+  70%  { transform: translateY(0) rotate(0); }
+  85%  { transform: translateY(-2px); }
+  100% { transform: translateY(0); }
+}
+
+@keyframes textIn {
+  from { opacity: 0; transform: translateX(-8px); }
+}
+
+.nav {
+  display: flex;
+  gap: 4px;
+}
+
+.nav__link {
+  padding: 8px 10px;
+  border-radius: 999px;
+  font-size: 14px;
+  color: var(--muted);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 0.2s, background 0.2s;
+}
+
+.nav__link:hover {
+  color: var(--text);
+}
+
+/* внешняя ссылка в меню: со стрелкой «наружу» */
+.nav__link--ext {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.nav__link--ext svg {
+  width: 12px;
+  height: 12px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+}
+
+.nav__link.is-active {
+  color: var(--text);
+  background: var(--card-2);
+}
+
+.burger {
+  display: none;              /* видна только на телефоне */
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+.header__right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* плашка с двумя кнопками темы */
+/* плашка темы — такая же «капсула», как шапка */
+.theme {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 64px;
+  padding: 0 13px;
+  background: var(--header-bg);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+}
+
+/* кнопка «Войти» */
+.login {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 18px 0 14px;
+  border-radius: 999px;
+  background: var(--text);      /* инвертирована: светлая в тёмной теме и наоборот */
+  color: var(--bg);
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: transform 0.2s, opacity 0.2s;
+}
+
+.login:hover {
+  transform: translateY(-1px);
+  opacity: 0.9;
+}
+
+.login svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.theme__btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: var(--muted);
+  transition: color 0.2s, background 0.2s;
+}
+
+.theme__btn:hover {
+  color: var(--text);
+}
+
+.theme__btn.is-active {
+  color: var(--text);
+  background: var(--card-2);
+}
+
+.theme__btn svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.burger span {
+  width: 16px;
+  height: 1.5px;
+  background: var(--text);
+}
+
+/* ---------- 7. Hero ---------- */
+.hero {
+  padding: 24px 16px 0;
+}
+
+/* большая карточка, всё содержимое по центру */
+.hero__card {
+  max-width: var(--max);
+  margin: 0 auto;
+  min-height: 600px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  padding: 72px 32px;
+  text-align: center;
+  border-radius: 36px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  overflow: hidden;
+  position: relative;
+  isolation: isolate;   /* слои ::before/::after остаются внутри карточки, под текстом */
+}
+
+/* градиент: три размытых пятна, которые медленно «плавают» */
+.hero__card::before {
+  content: "";
+  position: absolute;
+  inset: -25%;
+  z-index: -2;
+  background:
+    radial-gradient(35% 45% at 25% 30%, var(--blob-1), transparent 70%),
+    radial-gradient(40% 50% at 78% 72%, var(--blob-2), transparent 70%),
+    radial-gradient(30% 40% at 62% 18%, var(--blob-3), transparent 70%);
+  filter: blur(40px);
+  animation: drift 20s ease-in-out infinite alternate;
+  /* при прокрутке пятна уезжают вниз и увеличиваются (--hs от 0 до 1 задаёт JS).
+     translate/scale — отдельные свойства, поэтому не мешают transform из анимации drift */
+  translate: 0 calc(var(--hs, 0) * 60px);
+  scale: calc(1 + var(--hs, 0) * 0.15);
+}
+
+/* тонкая сетка поверх градиента, к краям плавно исчезает (mask) */
+.hero__card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    linear-gradient(var(--hero-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--hero-grid) 1px, transparent 1px);
+  background-size: 48px 48px;
+  background-position: center calc(50% + var(--hs, 0) * 30px);  /* сетка тоже едет при прокрутке */
+  -webkit-mask-image: radial-gradient(ellipse 60% 60% at 50% 50%, #000 30%, transparent 100%);
+  mask-image: radial-gradient(ellipse 60% 60% at 50% 50%, #000 30%, transparent 100%);
+}
+
+/* слой эффекта под курсором: появляется, когда мышь над карточкой */
+.hero__fx {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s;
+  /* мягкое светлое пятно в точке курсора (--hx / --hy задаёт JS) */
+  background: radial-gradient(260px circle at var(--hx, 50%) var(--hy, 50%), var(--hero-spot), transparent 70%);
+}
+
+/* яркая сетка, видимая только в круге вокруг курсора — эффект «фонарика» */
+.hero__fx::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--hero-grid-hi) 1px, transparent 1px),
+    linear-gradient(90deg, var(--hero-grid-hi) 1px, transparent 1px);
+  background-size: 48px 48px;
+  background-position: center calc(50% + var(--hs, 0) * 30px);
+  -webkit-mask-image: radial-gradient(110px circle at var(--hx, 50%) var(--hy, 50%), #000, transparent 75%);
+  mask-image: radial-gradient(110px circle at var(--hx, 50%) var(--hy, 50%), #000, transparent 75%);
+}
+
+.hero__card:hover .hero__fx {
+  opacity: 1;
+}
+
+@keyframes drift {
+  0%   { transform: translate(0, 0) rotate(0deg); }
+  50%  { transform: translate(5%, -4%) rotate(10deg); }
+  100% { transform: translate(-5%, 4%) rotate(-8deg); }
+}
+
+/* заголовок: два слова разными оттенками, как в логотипе */
+.hero__title {
+  font-size: clamp(52px, 10vw, 112px);
+  font-weight: 500;
+  line-height: 0.95;
+  letter-spacing: -0.045em;
+  animation: heroIn 0.9s ease-out both;
+}
+
+.hero__name {
+  color: var(--text);
+}
+
+.hero__sub-name {
+  background: linear-gradient(90deg, var(--shine-a) 0%, var(--shine-b) 50%, var(--shine-a) 100%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shimmer 6s linear infinite;
+}
+
+.hero__desc {
+  max-width: 560px;
+  font-size: 18px;
+  line-height: 1.6;
+  color: var(--muted);
+  text-wrap: balance;
+  animation: heroIn 0.9s 0.15s ease-out both;
+}
+
+/* плашка с поддерживаемыми ОС */
+.hero__os {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--muted);
+  animation: heroIn 0.9s 0.3s ease-out both;
+}
+
+.hero__os svg {
+  width: 14px;
+  height: 14px;
+  fill: var(--muted);
+}
+
+/* кнопка «Возможности софта» */
+.hero__more {
+  margin-top: 12px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text);
+  text-decoration: none;
+  animation: heroIn 0.9s 0.45s ease-out both;
+}
+
+/* стрелка покачивается вниз, намекая прокрутить */
+.hero__more .arrow {
+  stroke: var(--text);
+  animation: nudge 1.8s ease-in-out infinite;
+}
+
+@keyframes heroIn {
+  from { opacity: 0; transform: translateY(16px); }
+}
+
+@keyframes nudge {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(4px); }
+}
+
+/* ---------- 8. Секции ---------- */
+.section {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 96px 16px 0;
+}
+
+.section__head {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-bottom: 40px;
+}
+
+/* три шага */
+.steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.steps .card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 240px;
+  transition: transform 0.25s, border-color 0.25s, background 0.25s;
+}
+
+/* наведение на карточку шага: приподнимается, рамка и фон светлеют */
+.steps .card:hover {
+  transform: translateY(-4px);
+  border-color: var(--muted);
+  background: var(--card-2);
+}
+
+/* карточка шага с настоящим текстом */
+.step__title {
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.step__text {
+  color: var(--muted);
+}
+
+.section__title {
+  font-size: clamp(28px, 4vw, 40px);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+}
+
+/* номер шага в кружке */
+.card__num {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  font-family: var(--mono);
+  font-size: 15px;
+  color: var(--muted);
+  margin-bottom: auto;
+  transition: background 0.25s, color 0.25s, border-color 0.25s;
+}
+
+/* при наведении кружок заливается цветом текста */
+.steps .card:hover .card__num {
+  background: var(--text);
+  border-color: var(--text);
+  color: var(--bg);
+}
+
+/* ---------- Тарифы ---------- */
+.plans {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  align-items: stretch;
+}
+
+/* 4 карточки в ряд не помещаются на планшете — по 2 */
+@media (max-width: 1100px) {
+  .plans {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.plan {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 340px;
+  transition: transform 0.25s, border-color 0.25s;
+}
+
+.plan:hover {
+  transform: translateY(-4px);
+  border-color: var(--muted);
+}
+
+.plan__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.plan__name {
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.plan__badge {
+  padding: 4px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.plan__days {
+  color: var(--muted);
+}
+
+.plan__price {
+  margin-top: 28px;
+  font-size: 20px;
+  color: var(--muted);
+}
+
+.plan__price .mono {
+  font-size: clamp(44px, 5vw, 56px);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--text);
+}
+
+.plan__per-day {
+  font-size: 14px;
+  color: var(--muted);
+  margin-bottom: 28px;
+}
+
+/* средний тариф — инвертирован: светлый в тёмной теме и наоборот */
+.plan--main {
+  background: var(--text);
+  border-color: var(--text);
+  color: var(--bg);
+}
+.plan--main:hover {
+  border-color: var(--text);
+}
+.plan--main .plan__days,
+.plan--main .plan__per-day,
+.plan--main .plan__price {
+  color: var(--muted-inv);
+}
+.plan--main .plan__price .mono {
+  color: var(--bg);
+}
+.plan--main .plan__badge {
+  background: var(--bg);
+  border-color: var(--bg);
+  color: var(--text);
+}
+.plan--main .btn--dark {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.plans__note {
+  margin-top: 20px;
+  text-align: center;
+  color: var(--muted);
+}
+.plans__note:empty {
+  display: none;
+}
+
+/* что входит во все тарифы */
+.includes {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.includes__item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 22px 24px;
+}
+
+.check-ico {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  padding: 4px;
+  border-radius: 50%;
+  background: var(--text);
+  fill: none;
+  stroke: var(--bg);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* FAQ */
+.faq {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.faq__item {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+.faq__item summary {
+  list-style: none;              /* убрать стандартный треугольник */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 24px 28px;
+  cursor: pointer;
+}
+.faq__item summary::-webkit-details-marker {
+  display: none;
+}
+
+/* плюс справа, превращается в крестик */
+.faq__item summary::after {
+  content: "+";
+  font-size: 22px;
+  color: var(--muted);
+  transition: transform 0.2s;
+}
+.faq__item[open] summary::after {
+  transform: rotate(45deg);
+}
+
+.faq__body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0 28px 24px;
+}
+
+.faq__item summary {
+  font-weight: 500;
+}
+
+.faq__body p {
+  color: var(--muted);
+}
+
+/* призыв к действию */
+.cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  padding: 80px 32px;
+  border-radius: 36px;
+  background: var(--text);
+}
+.cta .sk--h2 { width: 420px; }
+.cta .sk--line { max-width: 320px; }
+.cta .btn--dark .sk { background: var(--sk-btn); animation: none; }
+
+/* ---------- Внутренние страницы ---------- */
+
+/* заголовок вверху страницы (тарифы, инструкция и т.д.) */
+.page-head {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 72px 16px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* серый прямоугольник-заглушка под картинку или скриншот */
+.ph {
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--card-2);
+  min-height: 140px;
+}
+
+/* инструкция: шаги друг под другом */
+.guide {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.guide__step {
+  display: grid;
+  grid-template-columns: 64px 1fr 1fr;
+  align-items: center;
+  gap: 32px;
+}
+
+.guide__num {
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  font-size: 22px;
+  color: var(--muted);
+  transition: background 0.25s, color 0.25s, border-color 0.25s;
+}
+
+.guide__step {
+  transition: transform 0.25s, border-color 0.25s, background 0.25s;
+}
+
+/* шаги инструкции выделяются при наведении так же, как карточки шагов */
+.guide__step:hover {
+  transform: translateY(-4px);
+  border-color: var(--muted);
+  background: var(--card-2);
+}
+
+.guide__step:hover .guide__num {
+  background: var(--text);
+  border-color: var(--text);
+  color: var(--bg);
+}
+
+.guide__text {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* системные требования: таблица из строк */
+.specs {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 32px;
+}
+
+.specs__row {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  align-items: center;
+  gap: 16px;
+  padding: 22px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.specs__row:last-child {
+  border-bottom: none;
+}
+
+/* реферальная ссылка */
+.ref {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.ref__field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 6px 6px 20px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--card-2);
+}
+
+.ref__title {
+  font-size: 24px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+.ref__text {
+  color: var(--muted);
+  margin-top: -16px;
+}
+
+.ref__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* сам код: крупно, моноширинным шрифтом */
+.ref__value {
+  flex: 1;
+  min-width: 0;
+  font-size: clamp(22px, 3vw, 30px);
+  letter-spacing: 0.08em;
+  overflow-wrap: anywhere;
+}
+
+.ref__field .btn {
+  height: 44px;
+  padding: 0 22px;
+}
+
+/* форма смены кода */
+.ref__edit {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: -12px;
+}
+
+.ref__edit-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ref__edit-row .field__input {
+  flex: 1 1 200px;
+  width: auto;
+}
+
+.ref__edit-row .btn {
+  height: 48px;
+  padding: 0 22px;
+}
+
+.field__input.is-error {
+  border-color: var(--danger);
+}
+
+.stats__num {
+  font-size: clamp(32px, 4vw, 44px);
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.stats__label {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.ref__subtitle {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+/* список приглашённых: логин — статус — дата */
+.invited {
+  list-style: none;
+}
+
+.invited__item {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.invited__name {
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+
+.invited__status {
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.invited__date {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.invited__empty {
+  padding: 20px 0 4px;
+  color: var(--muted);
+}
+
+/* условия программы */
+.rules {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-left: 52px;
+  color: var(--muted);
+}
+
+.rules li::marker {
+  color: var(--text);
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.stats__item {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 24px;
+  border-radius: var(--radius-sm);
+  background: var(--card-2);
+}
+
+/* поддержка: карточки способов связи */
+.contacts {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.contact {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.contact__icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: var(--card-2);
+  border: 1px solid var(--border);
+  margin-bottom: 8px;
+}
+
+/* ---------- Партнёры ---------- */
+.page-title {
+  font-size: clamp(40px, 6vw, 64px);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.page-desc {
+  max-width: 520px;
+  font-size: 18px;
+  color: var(--muted);
+}
+
+.partners {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.partner {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 300px;
+  color: var(--text);
+  text-decoration: none;
+  transition: transform 0.25s, border-color 0.25s;
+}
+
+/* при наведении карточка приподнимается, рамка светлеет */
+a.partner:hover {
+  transform: translateY(-4px);
+  border-color: var(--muted);
+}
+
+.partner__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.partner__icon {
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  background: var(--text);
+}
+
+.partner__icon svg {
+  width: 30px;
+  height: 30px;
+  fill: none;
+  stroke: var(--bg);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* карточка-приглашение: пунктирная рамка и прозрачный фон */
+.partner--invite {
+  background: transparent;
+  border-style: dashed;
+}
+
+.partner__icon--plus {
+  background: transparent;
+  border: 1px dashed var(--muted);
+}
+
+.partner__icon--plus svg {
+  stroke: var(--text);
+  transition: transform 0.3s;
+}
+
+/* плюсик поворачивается при наведении */
+a.partner--invite:hover .partner__icon--plus svg {
+  transform: rotate(90deg);
+}
+
+.partner__tag {
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.partner__name {
+  font-size: 28px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+.partner__desc {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+/* «Перейти на сайт» прижата к низу карточки */
+.partner__more {
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.partner__more svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  transition: transform 0.25s;
+}
+
+a.partner:hover .partner__more svg {
+  transform: translate(3px, -3px);
+}
+
+a.partner--invite:hover .partner__more svg {
+  transform: translateX(4px);
+}
+
+@media (max-width: 900px) {
+  .partners {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- Вход, регистрация, личный кабинет ---------- */
+.auth {
+  padding: 72px 16px 0;
+}
+
+.auth__card,
+.account {
+  max-width: 440px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 40px;
+}
+
+.account {
+  max-width: 560px;
+  gap: 28px;
+}
+
+.auth__title {
+  font-size: 32px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+}
+
+.auth__sub {
+  color: var(--muted);
+  margin-bottom: 20px;
+}
+
+.auth__form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* поле формы: подпись, ввод, подсказка, ошибка */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.field__label {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.field__wrap {
+  position: relative;
+}
+
+.field__input {
+  width: 100%;
+  height: 48px;
+  padding: 0 16px;
+  font: inherit;
+  font-size: 16px;            /* 16px — чтобы iPhone не увеличивал страницу при фокусе */
+  color: var(--text);
+  background: var(--card-2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.field__wrap .field__input {
+  padding-right: 52px;        /* место под кнопку-глаз */
+}
+
+.field__input:focus {
+  border-color: var(--muted);
+  box-shadow: 0 0 0 3px var(--border);
+}
+
+.field__optional {
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.field__hint {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.field__error {
+  font-size: 13px;
+  color: var(--danger);
+}
+
+.field__error:empty {
+  display: none;
+}
+
+/* поле с ошибкой: красная рамка, подсказка прячется */
+.field.has-error .field__input {
+  border-color: var(--danger);
+}
+.field.has-error .field__hint {
+  display: none;
+}
+
+/* кнопка показать/скрыть пароль */
+.field__eye {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+}
+.field__eye svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+}
+.field__eye.is-on {
+  color: var(--text);
+}
+
+/* чекбокс «Запомнить меня» */
+.check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  cursor: pointer;
+}
+.check input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--text);
+}
+
+/* общая ошибка формы («Неверный логин или пароль») */
+.auth__error {
+  font-size: 14px;
+  color: var(--danger);
+  text-align: center;
+}
+.auth__error:empty {
+  display: none;
+}
+
+.auth__switch {
+  margin-top: 16px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--muted);
+}
+.auth__switch a {
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* личный кабинет */
+.account__top {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.account__avatar {
+  flex: none;
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--text);
+  color: var(--bg);
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.account__name {
+  font-size: 28px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  overflow-wrap: anywhere;
+}
+
+.account__email {
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.account__info {
+  border-top: 1px solid var(--border);
+}
+
+.account__row {
+  display: grid;
+  grid-template-columns: 170px 1fr;
+  gap: 16px;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.account__row dt {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.account__row dd {
+  overflow-wrap: anywhere;
+}
+
+.account__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+@media (max-width: 600px) {
+  .auth {
+    padding-top: 40px;
+  }
+  .auth__card,
+  .account {
+    padding: 28px 20px;
+  }
+  .account__row {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+  /* ссылка и кнопка «Копировать» друг под другом */
+  .ref__field {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 8px;
+    border-radius: var(--radius-sm);
+  }
+  .ref__value {
+    padding: 8px 8px 4px;
+  }
+  .invited__item {
+    grid-template-columns: 1fr auto;
+  }
+  .invited__date {
+    grid-column: 1 / -1;
+  }
+  .rules {
+    padding-left: 40px;
+  }
+}
+
+/* ---------- 9. Подвал ---------- */
+.footer {
+  margin-top: 96px;
+  border-top: 1px solid var(--border);
+  padding: 56px 16px 32px;
+}
+
+.footer__inner {
+  max-width: var(--max);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 32px;
+}
+
+.footer__brand,
+.footer__col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.footer__text {
+  max-width: 300px;
+  margin-top: 8px;
+  color: var(--muted);
+}
+
+/* ссылка на новостной канал — небольшая «пилюля» */
+.footer__news {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 14px;
+  color: var(--text);
+  text-decoration: none;
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+.footer__news:hover {
+  border-color: var(--muted);
+  transform: translateY(-1px);
+}
+
+.footer__news svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.footer__news-ico {
+  width: 16px;
+  height: 16px;
+  stroke-width: 1.8;
+}
+
+.footer__news-arrow {
+  width: 12px;
+  height: 12px;
+  stroke-width: 1.8;
+  color: var(--muted);
+}
+
+.footer__title {
+  margin-bottom: 4px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.footer__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 15px;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.footer__link:hover {
+  color: var(--text);
+}
+
+.footer__link svg,
+.footer__top svg {
+  width: 12px;
+  height: 12px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* нижняя строка: копирайт, дисклеймер, «Наверх» */
+.footer__bottom {
+  max-width: var(--max);
+  margin: 48px auto 0;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 24px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.footer__top {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.footer__top:hover svg {
+  transform: translateY(-2px);
+}
+
+.footer__top svg {
+  transition: transform 0.2s;
+}
+
+@media (max-width: 600px) {
+  .footer__inner {
+    grid-template-columns: 1fr 1fr;
+  }
+  .footer__brand {
+    grid-column: 1 / -1;   /* логотип и описание на всю ширину */
+  }
+  .footer__bottom {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .footer {
+    padding-bottom: 96px;  /* место под плавающую плашку темы в углу */
+  }
+}
+
+/* ---------- 10. Появление при прокрутке ---------- */
+.reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---------- 11. Адаптив (планшет и телефон) ---------- */
+@media (max-width: 900px) {
+  .hero__card {
+    min-height: 480px;
+    padding: 56px 24px;
+  }
+  .hero__desc {
+    font-size: 16px;
+  }
+  .steps,
+  .plans,
+  .includes,
+  .contacts,
+  .stats {
+    grid-template-columns: 1fr;
+  }
+  .guide__step {
+    grid-template-columns: 48px 1fr;
+  }
+  .guide__step .ph {
+    grid-column: 1 / -1;
+  }
+  .footer__inner {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* меню прячется в бургер раньше, чем остальной адаптив: пункты длинные и не влезают */
+@media (max-width: 1240px) {
+  .nav {
+    display: none;
+    position: absolute;
+    top: 76px;
+    left: 16px;
+    right: 16px;
+    flex-direction: column;
+    padding: 24px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+  }
+  .nav.is-open {
+    display: flex;                /* открывается кнопкой-бургером */
+  }
+  .nav__link {
+    padding: 14px 16px;
+    font-size: 16px;
+  }
+  .burger {
+    display: flex;
+  }
+}
+
+/* телефон: плашка темы «плавает» в правом нижнем углу, у «Войти» остаётся только иконка */
+@media (max-width: 600px) {
+  .theme {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    height: 52px;
+    padding: 0 7px;
+    z-index: 20;
+  }
+  .login {
+    width: 40px;
+    padding: 0;
+    justify-content: center;
+  }
+  .login__text {
+    display: none;
+  }
+}
+
+@media (max-width: 700px) {
+  .section {
+    padding-top: 64px;
+  }
+  .specs__row {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .page-head {
+    padding-top: 48px;
+  }
+}
+
+/* если в системе отключены анимации */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  .reveal      { opacity: 1; transform: none; }
+}

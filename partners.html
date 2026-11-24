@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Партнёры — Calibra Deboost</title>
+
+  <!-- Шрифты с Google Fonts: Manrope для текста, Geist Mono для цифр -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Тема ставится ДО отрисовки страницы, чтобы не было «вспышки» не той темы.
+       Если пользователь выбирал тему — берём из localStorage, иначе системную. -->
+  <script>
+    (function () {
+      var saved = null;
+      try { saved = localStorage.getItem("theme"); } catch (e) {}
+      var systemLight = window.matchMedia("(prefers-color-scheme: light)").matches;
+      var theme = saved || (systemLight ? "light" : "dark");
+      if (theme === "light") document.documentElement.classList.add("light");
+    })();
+  </script>
+</head>
+<body>
+
+  <!-- Логотип Calibra (из assets/logos/logo_birdC_C_dark.svg приложения, без чёрного квадрата).
+       Статичная версия для подвала: описана как <symbol>, подключается через <use>. -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="calibra-logo" viewBox="0 0 64 64">
+      <path d="M34 15 L29 6 L40 14 Z" fill="currentColor"/>
+      <circle cx="39" cy="23" r="9" fill="currentColor"/>
+      <path d="M47 20 L56 24 L47 27 Z" fill="currentColor"/>
+      <path d="M31 27 C20 31 15 42 19 51 L28 49 C38 47 46 40 46 30 Z" fill="currentColor"/>
+      <path d="M21 49 L11 57 L26 52 Z" fill="currentColor"/>
+      <circle cx="41" cy="21" r="2" style="fill: var(--bg)"/>
+      <path d="M36.5 35.5A5.5 5.5 0 1 0 36.5 44.5" fill="none" style="stroke: var(--bg)" stroke-width="2.6" stroke-linecap="round"/>
+    </symbol>
+  </svg>
+
+  <!-- ===== ШАПКА ===== -->
+  <header class="header">
+    <div class="header__row">
+      <div class="header__inner">
+        <a class="logo" href="index.html">
+          <span class="logo__mark">
+            <!-- анимированная птица: каждая часть со своим классом -->
+            <svg class="bird" viewBox="0 0 64 64" aria-hidden="true">
+              <g class="bird__all">
+                <path class="bird__tail" d="M21 49 L11 57 L26 52 Z"/>
+                <path d="M31 27 C20 31 15 42 19 51 L28 49 C38 47 46 40 46 30 Z"/>
+                <path class="bird__letter" d="M36.5 35.5A5.5 5.5 0 1 0 36.5 44.5"/>
+                <g class="bird__head">
+                  <path class="bird__crest" d="M34 15 L29 6 L40 14 Z"/>
+                  <circle cx="39" cy="23" r="9"/>
+                  <path d="M47 20 L56 24 L47 27 Z"/>
+                  <circle class="bird__eye" cx="41" cy="21" r="2"/>
+                </g>
+              </g>
+            </svg>
+          </span>
+          <span class="logo__text"><span class="logo__name">Calibra</span> <span class="logo__sub">Deboost</span></span>
+        </a>
+
+        <nav class="nav" id="nav">
+          <!-- каждая ссылка ведёт на свою страницу; текущая подсвечена классом is-active.
+               «Поддержка» — внешняя ссылка, адрес задаётся в script.js (SUPPORT_URL) -->
+          <a class="nav__link" href="index.html">Главная</a>
+          <a class="nav__link" href="prices.html">Тарифы</a>
+          <a class="nav__link" href="guide.html">Инструкция и установка</a>
+          <a class="nav__link" href="referral.html">Реферальная система</a>
+          <a class="nav__link is-active" href="partners.html" aria-current="page">Партнёры</a>
+          <a class="nav__link nav__link--ext" href="https://t.me/Calibrasupport_bot" data-support target="_blank" rel="noopener noreferrer">
+            Поддержка
+            <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11L11 5M6 5h5v5"/></svg>
+          </a>
+        </nav>
+
+        <div class="header__right">
+          <!-- кнопка входа: если пользователь вошёл, script.js заменит текст на логин и ссылку на account.html -->
+          <a class="login" id="loginBtn" href="login.html">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="8" r="4"/>
+              <path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/>
+            </svg>
+            <span class="login__text">Войти</span>
+          </a>
+
+          <button class="burger" id="burger" type="button" aria-label="Меню">
+            <span></span><span></span><span></span>
+          </button>
+        </div>
+      </div>
+
+      <!-- переключатель темы — отдельная плашка справа от шапки -->
+      <div class="theme" role="group" aria-label="Тема">
+        <button class="theme__btn" id="themeLight" type="button" aria-label="Светлая тема">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"/>
+            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>
+          </svg>
+        </button>
+        <button class="theme__btn" id="themeDark" type="button" aria-label="Тёмная тема">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ===== ЗАГОЛОВОК СТРАНИЦЫ ===== -->
+    <section class="page-head">
+      <h1 class="page-title">Партнёры</h1>
+      <p class="page-desc">Проекты, с которыми мы работаем и которые рекомендуем.</p>
+    </section>
+
+    <!-- ===== СПИСОК ПАРТНЁРОВ ===== -->
+    <section class="section reveal">
+      <div class="partners">
+
+        <!-- карточка партнёра: вся карточка кликабельна и открывает сайт в новой вкладке -->
+        <a class="partner card" href="https://funpaypulse.com" target="_blank" rel="noopener noreferrer">
+          <div class="partner__top">
+            <div class="partner__icon" aria-hidden="true">
+              <!-- простая линия-«пульс» -->
+              <svg viewBox="0 0 32 32"><polyline points="3,17 10,17 13,10 18,24 21,17 29,17"/></svg>
+            </div>
+            <span class="partner__tag">Инструмент для продавцов</span>
+          </div>
+
+          <h2 class="partner__name">FunPay Pulse</h2>
+          <p class="partner__desc">
+            Приложение для продавцов FunPay: несколько аккаунтов, лоты, заказы и сообщения
+            в одном окне, плюс плагины для автоматизации рутины.
+          </p>
+
+          <span class="partner__more">
+            Перейти на сайт
+            <!-- стрелка «наружу»: ссылка ведёт на другой сайт -->
+            <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11L11 5M6 5h5v5"/></svg>
+          </span>
+        </a>
+
+        <!-- приглашение стать партнёром: ведёт по ссылке поддержки (адрес задаётся в script.js) -->
+        <a class="partner partner--invite card" href="https://t.me/Calibrasupport_bot" data-support target="_blank" rel="noopener noreferrer">
+          <div class="partner__top">
+            <div class="partner__icon partner__icon--plus" aria-hidden="true">
+              <svg viewBox="0 0 32 32"><path d="M16 8v16M8 16h16"/></svg>
+            </div>
+            <span class="partner__tag">Свободное место</span>
+          </div>
+
+          <h2 class="partner__name">Здесь можете быть вы</h2>
+          <p class="partner__desc">
+            Делаете проект, который как вы думаете может пересекаться с нашим? Напишите нам и мы рассмотрим вариант партнерства с нами.
+          </p>
+
+          <span class="partner__more">
+            Стать партнёром
+            <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+          </span>
+        </a>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===== ПОДВАЛ ===== -->
+  <footer class="footer">
+    <div class="footer__inner">
+      <div class="footer__brand">
+        <a class="logo" href="index.html">
+          <span class="logo__mark">
+            <svg class="logo__icon" viewBox="0 0 64 64" aria-hidden="true"><use href="#calibra-logo"/></svg>
+          </span>
+          <span class="logo__text"><span class="logo__name">Calibra</span> <span class="logo__sub">Deboost</span></span>
+        </a>
+        <p class="footer__text">Бот для автоматического понижения ранга в Dota&nbsp;2.</p>
+        <!-- новостной канал: внешняя ссылка, открывается в новой вкладке -->
+        <a class="footer__news" href="https://t.me/CalibraDeboost" target="_blank" rel="noopener noreferrer">
+          <svg class="footer__news-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 4L3 11l6 2 2 6 3-4 5 4z"/><path d="M9 13l12-9"/></svg>
+          Новостной канал
+          <svg class="footer__news-arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11L11 5M6 5h5v5"/></svg>
+        </a>
+      </div>
+
+      <nav class="footer__col" aria-label="Разделы сайта">
+        <h2 class="footer__title">Сайт</h2>
+        <a class="footer__link" href="index.html">Главная</a>
+        <a class="footer__link" href="prices.html">Тарифы</a>
+        <a class="footer__link" href="guide.html">Инструкция и установка</a>
+        <a class="footer__link" href="referral.html">Реферальная система</a>
+        <a class="footer__link" href="partners.html">Партнёры</a>
+      </nav>
+
+      <nav class="footer__col" aria-label="Аккаунт">
+        <h2 class="footer__title">Аккаунт</h2>
+        <a class="footer__link" href="login.html">Вход</a>
+        <a class="footer__link" href="register.html">Регистрация</a>
+        <a class="footer__link" href="account.html">Личный кабинет</a>
+      </nav>
+
+      <nav class="footer__col" aria-label="Помощь">
+        <h2 class="footer__title">Помощь</h2>
+        <a class="footer__link footer__link--ext" href="https://t.me/Calibrasupport_bot" data-support target="_blank" rel="noopener noreferrer">Поддержка <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11L11 5M6 5h5v5"/></svg></a>
+        <a class="footer__link" href="prices.html#faq">Вопросы об оплате</a>
+      </nav>
+    </div>
+
+    <div class="footer__bottom">
+      <p>© 2026 Calibra Deboost</p>
+      <p>Не является официальным продуктом Valve. Dota 2 — товарный знак Valve Corporation.</p>
+      <!-- href="#" ведёт в начало страницы, плавность даёт scroll-behavior: smooth -->
+      <a class="footer__top" href="#">Наверх <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 14V2M3 7l5-5 5 5"/></svg></a>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
